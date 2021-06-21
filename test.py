@@ -23,7 +23,8 @@ masks = np.asarray(Image.open(args.mask).convert('1'), dtype=np.float32)
 
 images = torch.Tensor(real.copy())[None,...]*2-1
 masks = torch.Tensor(masks)[None,None,...].float()
-latents_in = torch.ones(1, 512)
+masks = (masks>0).float()
+latents_in = torch.randn(1, 512)
 
 net = Generator()
 net.load_state_dict(torch.load(args.checkpoint))
