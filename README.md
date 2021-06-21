@@ -7,6 +7,12 @@ Input image<img src="imgs/example_image.jpg" width=200> Mask<img src="imgs/examp
 
 ## Usage
 
+### requirments
+```
+conda install pytorch==1.7.1 torchvision==0.8.2 cudatoolkit=10.2 -c pytorch
+conda install pillow
+```
+
 ### inference 
 
 1. download pretrained model using ``download_*.sh" (converted from the tensorflow pretrained model)
@@ -29,4 +35,5 @@ Coming soon
 ## Reference
 
 [1] official tensorflow version: https://github.com/zsyzzsoft/co-mod-gan
+
 [2] stylegan2-pytorch https://github.com/rosinality/stylegan2-pytorch
