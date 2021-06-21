@@ -15,12 +15,12 @@ conda install pillow
 
 ### inference 
 
-1. download pretrained model using ``download_*.sh" (converted from the tensorflow pretrained model)
+1. download pretrained model using ``download/*.sh" (converted from the tensorflow pretrained model)
 
 e.g. ffhq512
 
 ```
-./download_ffhq512.sh
+./download/ffhq512.sh
 ```
 
 2. use the following command as a minimal example of usage
