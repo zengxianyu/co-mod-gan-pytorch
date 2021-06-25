@@ -40,9 +40,3 @@ result = result.detach().cpu().numpy()
 result = (result+1)/2
 result = (result[0].transpose((1,2,0)))*255
 Image.fromarray(result.clip(0,255).astype(np.uint8)).save(args.output)
-
-inputs = ((images*masks)+1)/2
-inputs = (inputs*255).cpu().numpy()[0].transpose((1,2,0)).astype(np.uint8)
-masks = (masks*255).cpu().numpy()[0,0].astype(np.uint8)
-Image.fromarray(inputs).save("ffhq_in.png")
-Image.fromarray(masks).save("ffhq_m.png")
