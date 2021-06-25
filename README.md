@@ -3,7 +3,7 @@ Implementation of the paper ``Large Scale Image Completion via Co-Modulated Gene
 
 official tensorflow version: https://github.com/zsyzzsoft/co-mod-gan
 
-Input image<img src="imgs/example_image.jpg" width=200> Mask<img src="imgs/example_mask.jpg" width=200>  Result<img src="imgs/example_output.jpg" width=200>  
+Input image<img src="imgs/fffhq_in.png" width=200> Mask<img src="imgs/ffhq_m.png" width=200>  Result<img src="imgs/example_output.jpg" width=200>  
 
 ## Usage
 
