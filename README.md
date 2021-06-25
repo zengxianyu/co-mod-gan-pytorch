@@ -3,7 +3,7 @@ Implementation of the paper ``Large Scale Image Completion via Co-Modulated Gene
 
 official tensorflow version: https://github.com/zsyzzsoft/co-mod-gan
 
-Input image<img src="imgs/fffhq_in.png" width=200> Mask<img src="imgs/ffhq_m.png" width=200>  Result<img src="imgs/example_output.jpg" width=200>  
+Input image<img src="imgs/ffhq_in.png" width=200> Mask<img src="imgs/ffhq_m.png" width=200>  Result<img src="imgs/example_output.jpg" width=200>  
 
 ## Usage
 
@@ -23,11 +23,19 @@ e.g. ffhq512
 ./download/ffhq512.sh
 ```
 
+converted model:
+* FFHQ 512 checkpoints/co-mod-gan-ffhq-9-025000.pth
+* FFHQ 1024 checkpoints/co-mod-gan-ffhq-10-025000.pth
+* Places 512 checkpoints/co-mod-gan-places2-050000.pth
+
 2. use the following command as a minimal example of usage
 
 ```
-python test.py -i imgs/example_image.jpg -m imgs/example_mask.jpg -o ./imgs/example_output.jpg -c checkpoints/co-mod-gan-ffhq-9-025000.pth
+python test.py -i imgs/ffhq_in.png -m imgs/ffhq_m.png -o ./imgs/example_output.jpg -c checkpoints/co-mod-gan-ffhq-9-025000.pth
 ```
+
+### Demo
+Coming soon
 
 ### Training
 Coming soon
