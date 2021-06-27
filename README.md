@@ -3,11 +3,7 @@ Implementation of the paper ``Large Scale Image Completion via Co-Modulated Gene
 
 official tensorflow version: https://github.com/zsyzzsoft/co-mod-gan
 
-Input image<img src="imgs/ffhq_in.png" width=200> Mask<img src="imgs/ffhq_m.png" width=200>  Result<img src="imgs/example_output.jpg" width=200>  
-
-closed-form factorization of latent space
-
-2nd eigen vector:<a href="https://imgtu.com/i/RYtDFx"><img src="https://z3.ax1x.com/2021/06/27/RYtDFx.png" alt="RYtDFx.png" border="0" height=200/></a>
+Input image<img src="imgs/ffhq_in.png" width=200> Mask<img src="imgs/ffhq_m.png" width=200>  Result<img src="imgs/example_output.jpg" width=200> 
 
 ## Usage
 
