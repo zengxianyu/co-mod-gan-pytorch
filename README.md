@@ -9,8 +9,17 @@ Input image<img src="imgs/ffhq_in.png" width=200> Mask<img src="imgs/ffhq_m.png"
 
 ### requirments
 ```
-conda install pytorch==1.7.1 torchvision==0.8.2 cudatoolkit=10.2 -c pytorch
-conda install pillow
+conda install pytorch torchvision cudatoolkit=11 -c pytorch
+conda install matplotlib jinja2 ninja dill
+```
+
+Download the code:
+
+```
+git clone https://github.com/zengxianyu/co-mod-gan-pytorch
+git checkout train
+git submodule init
+git submodule update
 ```
 
 ### inference 
