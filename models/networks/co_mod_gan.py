@@ -138,8 +138,35 @@ class G_synthesis_co_mod_gan(nn.Module):
                 x = x.view(bsize, -1)
                 x = self.Dense0(x)
                 x = self.dropout(x)
-                return x, E_features
-        def make_encoder(channel_in=opt.num_channels+1):
+                return x, E_features, x
+        class E_block_final_conv(nn.Module): # res = 2..resolution_log2
+            def __init__(self):
+                super().__init__()
+                self.Conv = ConvLayer(
+                        nf(2),
+                        nf(1),
+                        kernel_size=3,
+                        activate=True)
+                self.ConvDense0 = ConvLayer(
+                        nf(1),
+                        nf(1)*2,
+                        kernel_size=3,
+                        activate=True)
+                self.Dense0 = EqualLinear(nf(1)*2, nf(1)*2,
+                                activation="fused_lrelu")
+                self.dropout = nn.Dropout(opt.dropout_rate)
+            def forward(self, data):
+                x, E_features = data
+                x = self.Conv(x)
+                E_features[2] = x
+                x_feat = self.ConvDense0(x)
+                x = F.adaptive_avg_pool2d(x_feat, 1)
+                bsize = x.size(0)
+                x = x.view(bsize, -1)
+                x = self.Dense0(x)
+                x = self.dropout(x)
+                return x, E_features, x_feat
+        def make_encoder(channel_in=opt.num_channels+1, conv_enc=False):
             Es = []
             for res in range(self.resolution_log2, 2, -1):
                 if res == self.resolution_log2:
@@ -155,19 +182,27 @@ class G_synthesis_co_mod_gan(nn.Module):
 
                             ))
             # Final layers.
-            Es.append(
-                    (
-                        '4x4',
-                        E_block_final()
+            if conv_enc:
+                Es.append(
+                        (
+                            '4x4',
+                            E_block_final_conv()
 
-                        ))
+                            ))
+            else:
+                Es.append(
+                        (
+                            '4x4',
+                            E_block_final()
+
+                            ))
             Es = nn.Sequential(OrderedDict(Es))
             return Es
         self.make_encoder = make_encoder
 
         # Main layers.
         c_in = opt.num_channels+1
-        self.E = self.make_encoder(channel_in=c_in)
+        self.E = self.make_encoder(channel_in=c_in, conv_enc=opt.conv_enc)
 
         # Single convolution layer with all the bells and whistles.
         # Building blocks for main layers.
@@ -255,8 +290,40 @@ class G_synthesis_co_mod_gan(nn.Module):
                 mod_vector = get_mod(dlatents_in, 1, x_global)
                 y = self.ToRGB(x, mod_vector)
                 return x, y
+        class Block0_conv(nn.Module):
+            def __init__(self):
+                super().__init__()
+                self.ConvDense = ConvLayer(
+                        nf(1)*2,
+                        nf(1),
+                        kernel_size=3,
+                        activate=True)
+                self.Conv = StyledConv(
+                        nf(1),
+                        nf(1),
+                        kernel_size=3,
+                        style_dim=mod_size,
+                        )
+                self.ToRGB = ToRGB(
+                        nf(1),
+                        style_dim=mod_size,
+                        upsample=False, out_channel=opt.num_channels)
+            def forward(self, x, dlatents_in, x_global):
+                x = self.ConvDense(x)
+                mod_vector = get_mod(dlatents_in, 0, x_global)
+                if opt.noise_injection:
+                    noise = None
+                else:
+                    noise = 0
+                x = self.Conv(x, mod_vector, noise)
+                mod_vector = get_mod(dlatents_in, 1, x_global)
+                y = self.ToRGB(x, mod_vector)
+                return x, y
         # Early layers.
-        self.G_4x4 = Block0()
+        if opt.conv_enc:
+            self.G_4x4 = Block0_conv()
+        else:
+            self.G_4x4 = Block0()
         # Main layers.
         for res in range(3, resolution_log2 + 1):
             setattr(self, 'G_%dx%d' % (2**res, 2**res),
@@ -265,8 +332,8 @@ class G_synthesis_co_mod_gan(nn.Module):
     def forward(self, images_in, masks_in, dlatents_in):
         y = torch.cat([1-masks_in - 0.5, images_in * (1-masks_in)], 1)
         E_features = {}
-        x_global, E_features = self.E((y, E_features))
-        x = x_global
+        x_global, E_features, x_feat = self.E((y, E_features))
+        x = x_feat
         x, y = self.G_4x4(x, dlatents_in, x_global)
         for res in range(3, self.resolution_log2 + 1):
             block = getattr(self, 'G_%dx%d' % (2**res, 2**res))
@@ -299,6 +366,7 @@ class Generator(BaseNetwork):
         parser.add_argument('--cond_mod',          type=bool, default= True,)
         parser.add_argument('--style_mod',         type=bool, default= True,)
         parser.add_argument('--noise_injection',   type=bool, default= True,)
+        parser.add_argument('--conv_enc', action='store_true')
         return parser
     def __init__(
             self,

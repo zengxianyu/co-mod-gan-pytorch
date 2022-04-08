@@ -691,7 +691,8 @@ class ConvLayer(nn.Sequential):
         blur_kernel=[1, 3, 3, 1],
         bias=True,
         activate=True,
-        downfac=2
+        downfac=2,
+        padding=None
     ):
         layers = []
 
@@ -708,7 +709,10 @@ class ConvLayer(nn.Sequential):
 
         else:
             stride = 1
-            self.padding = kernel_size // 2
+            if padding is None:
+                self.padding = kernel_size // 2
+            else:
+                self.padding = padding
 
         layers.append(
             EqualConv2d(
