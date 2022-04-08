@@ -64,3 +64,7 @@ Coming soon
 [1] official tensorflow version: https://github.com/zsyzzsoft/co-mod-gan
 
 [2] stylegan2-pytorch https://github.com/rosinality/stylegan2-pytorch
+
+[3] pix2pixHD https://github.com/NVIDIA/pix2pixHD
+
+[4] SPADE https://github.com/NVlabs/SPADE
