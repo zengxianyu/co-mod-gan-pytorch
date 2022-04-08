@@ -1,42 +1,39 @@
-import argparse
+"""
+Copyright (C) 2019 NVIDIA Corporation.  All rights reserved.
+Licensed under the CC BY-NC-SA 4.0 license (https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode).
+"""
+
+import pdb
+import cv2
+import os
+from collections import OrderedDict
+import json
+from tqdm import tqdm
 import numpy as np
 import torch
-from co_mod_gan import Generator
-from PIL import Image
+import data
+from options.test_options import TestOptions
+#from models.pix2pix_model import Pix2PixModel
+import models
 
-parser = argparse.ArgumentParser()
-parser.add_argument('-c', '--checkpoint', help='Network checkpoint path', required=True)
-parser.add_argument('-i', '--image', help='Original image path', required=True)
-parser.add_argument('-m', '--mask', help='Mask path', required=True)
-parser.add_argument('-o', '--output', help='Output (inpainted) image path', required=True)
-parser.add_argument('-t', '--truncation', help='Truncation psi for the trade-off between quality and diversity. Defaults to 1.', default=None)
-parser.add_argument('--device', help='cpu|cuda', default='cuda')
 
-args = parser.parse_args()
+opt = TestOptions().parse()
 
-assert args.truncation is None
+dataloader = data.create_dataloader(opt)
 
-device = torch.device(args.device)
+model = models.create_model(opt)
+model.eval()
 
-real = np.asarray(Image.open(args.image)).transpose([2, 0, 1])/255.0
-masks = np.asarray(Image.open(args.mask).convert('1'), dtype=np.float32)
-
-images = torch.Tensor(real.copy())[None,...]*2-1
-masks = torch.Tensor(masks)[None,None,...].float()
-masks = (masks>0).float()
-latents_in = torch.randn(1, 512)
-
-net = Generator()
-net.load_state_dict(torch.load(args.checkpoint))
-net.eval()
-
-net = net.to(device)
-images = images.to(device)
-masks = masks.to(device)
-latents_in = latents_in.to(device)
-
-result = net(images, masks, [latents_in], truncation=args.truncation)
-result = result.detach().cpu().numpy()
-result = (result+1)/2
-result = (result[0].transpose((1,2,0)))*255
-Image.fromarray(result.clip(0,255).astype(np.uint8)).save(args.output)
+for i, data_i in tqdm(enumerate(dataloader)):
+    if i * opt.batchSize >= opt.how_many:
+        break
+    with torch.no_grad():
+        generated,_ = model(data_i, mode='inference')
+    generated = torch.clamp(generated, -1, 1)
+    generated = (generated+1)/2*255
+    generated = generated.cpu().numpy().astype(np.uint8)
+    img_path = data_i['path']
+    for b in range(generated.shape[0]):
+        pred_im = generated[b].transpose((1,2,0))
+        print('process image... %s' % img_path[b])
+        cv2.imwrite(img_path[b], pred_im[:,:,::-1])
