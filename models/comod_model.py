@@ -67,7 +67,7 @@ class CoModModel(torch.nn.Module):
                     print(f"looad {opt.load_pretrained_d}")
                     self.netD = util.load_network_path(
                             self.netD, opt.load_pretrained_d)
-                self.mask_creator = MaskCreator(opt.path_objectshape_list, opt.path_objectshape_base)
+            self.mask_creator = MaskCreator(opt.path_objectshape_list, opt.path_objectshape_base)
             self.criterionGAN = networks.GANLoss(
                 opt.gan_mode, tensor=self.FloatTensor, opt=self.opt)
             if not opt.no_vgg_loss:

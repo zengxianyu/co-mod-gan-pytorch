@@ -1,7 +1,7 @@
 export CXX="g++"
 python train.py \
-	--batchSize 2 \
-	--nThreads 2 \
+	--batchSize $BSIZE \
+	--nThreads $NWK \
 	--name comod_places_vgg_l1 \
 	--train_image_dir ./datasets/places/places2 \
 	--train_image_list ./datasets/places/places2_standard_challenge.txt \

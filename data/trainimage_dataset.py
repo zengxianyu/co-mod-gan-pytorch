@@ -43,17 +43,18 @@ class TrainImageDataset(BaseDataset):
 
     def __getitem__(self, index):
         # input image (real images)
-        image_path = self.image_paths[index]
-        image = Image.open(image_path)
-        image = image.convert('RGB')
-        params = get_params(self.opt, image.size)
-        transform_image = get_transform(self.opt, params)
-        image_tensor = transform_image(image)
-        input_dict = {
-                      'image': image_tensor,
-                      'path': image_path,
-                      }
-        return input_dict
-        #except:
-        #    print(f"skip {image_path}")
-        #    return self.__getitem__((index+1)%self.__len__())
+        try:
+            image_path = self.image_paths[index]
+            image = Image.open(image_path)
+            image = image.convert('RGB')
+            params = get_params(self.opt, image.size)
+            transform_image = get_transform(self.opt, params)
+            image_tensor = transform_image(image)
+            input_dict = {
+                          'image': image_tensor,
+                          'path': image_path,
+                          }
+            return input_dict
+        except:
+            print(f"skip {image_path}")
+            return self.__getitem__((index+1)%self.__len__())
