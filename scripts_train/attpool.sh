@@ -4,7 +4,7 @@ python train.py \
 	--att_pool \
 	--batchSize $BSIZE \
 	--nThreads $NWK \
-	--name comod_vgg_l1_conv \
+	--name comod_vgg_l1_attp \
 	--train_image_dir ./datasets/places/places2 \
 	--train_image_list ./datasets/places/places2_standard_challenge.txt \
 	--train_image_postfix '' \
