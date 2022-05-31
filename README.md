@@ -11,6 +11,7 @@ Input image<img src="imgs/ffhq_in.png" width=200> Mask<img src="imgs/ffhq_m.png"
 ```
 conda install pytorch torchvision cudatoolkit=11 -c pytorch
 conda install matplotlib jinja2 ninja dill
+pip install git+https://github.com/zengxianyu/pytorch-fid
 ```
 
 Download the code:
